@@ -1,50 +1,44 @@
 using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
 
 public class HLHub : Hub
 {
-    HiLoGame hiLoGame = new HiLoGame();
+    private readonly HiLoGame hiLoGame = new HiLoGame();
 
-    public string Send(string message)
-    {
-        return message;
-    }
-
-    public override Task OnConnectedAsync()
+    public override async Task OnConnectedAsync()
     {
         var msg = hiLoGame.AddPlayer(Context.ConnectionId);
-        Clients.Caller.SendAsync("ReceiveMessage", msg);
-        return base.OnConnectedAsync();
+        await Clients.Caller.SendAsync("ReceiveMessage", msg);
+        await base.OnConnectedAsync();
     }
 
-    public override Task OnDisconnectedAsync(Exception exception)
+    public override async Task OnDisconnectedAsync(Exception exception)
     {
         hiLoGame.RemovePlayer(Context.ConnectionId);
-        return base.OnDisconnectedAsync(exception);
+        await base.OnDisconnectedAsync(exception);
     }
 
-    public Task SubmitGuess(int param)
+    public async Task SubmitGuess(int param)
     {
         hiLoGame.SubmitPlayerGuess(Context.ConnectionId, param);
         if (hiLoGame.IsWaitingForPlayers())
         {
-            Clients.Caller.SendAsync("ReceiveMessage", hiLoGame.GetWaitingMessage());
+            await Clients.Caller.SendAsync("ReceiveMessage", hiLoGame.GetWaitingMessage());
         }
         else
         {       
             if(hiLoGame.HasGuessed()){
                 hiLoGame.GenerateNewNumber();
-                SendAll(hiLoGame.GetHasGuessedMessage());
+                await SendAll(hiLoGame.GetHasGuessedMessage());
             }else{
-                SendAll(hiLoGame.GetPlayersScores());
+                await SendAll(hiLoGame.GetPlayersScores());
             }
         }
-        return Task.CompletedTask;
+        return;
     }
 
-    public Task SendAll(string text)
+    public async Task SendAll(string text)
     {
-        if (Clients != null)
-            return Clients.All.SendAsync("ReceiveMessage", text);
-        return Task.CompletedTask;
+        await Clients.All.SendAsync("ReceiveMessage", text);
     }
 }
