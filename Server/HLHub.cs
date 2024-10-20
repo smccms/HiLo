@@ -17,7 +17,7 @@ public class HLHub : Hub
         await base.OnConnectedAsync();
     }
 
-    public override async Task OnDisconnectedAsync(Exception exception)
+    public override async Task OnDisconnectedAsync(Exception? exception)
     {
         hiLoGame.RemovePlayer(Context.ConnectionId);
         await base.OnDisconnectedAsync(exception);
