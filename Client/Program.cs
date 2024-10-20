@@ -10,6 +10,21 @@ internal class Program
            .Build();
         connectionSignalR.On<string>("ReceiveMessage", text => Console.WriteLine(text));
         connectionSignalR.StartAsync().Wait();
-        while (true);
+        do
+        {
+            var input = Console.ReadLine();
+            if ("exit".Equals(input))
+            {
+                connectionSignalR.StopAsync().Wait();
+                break;
+            }
+            if (int.TryParse(input, out int guess))
+            {
+                connectionSignalR.SendAsync("SubmitGuess", guess).Wait();
+            }
+            else{
+                Console.WriteLine("Please insert a number ou 'exit' to quit the game.");
+            }
+        } while (true);
     }
 }
