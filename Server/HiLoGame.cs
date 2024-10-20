@@ -1,7 +1,7 @@
 /// <summary>
 /// Class <c>HiLoGame</c> - encapsulates the logic of the HiLoGame 
 /// </summary>
-public class HiLoGame
+public class HiLoGame : IHiLoGame
 {
     //min and max can be in a appsettings
     private const int MAX = 20;

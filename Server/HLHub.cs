@@ -3,8 +3,13 @@ using System.Threading.Tasks;
 
 public class HLHub : Hub
 {
-    private readonly HiLoGame hiLoGame = new HiLoGame();
+    private readonly IHiLoGame hiLoGame;
 
+    public HLHub(IHiLoGame hiLoGame)
+    {
+        this.hiLoGame = hiLoGame;
+    }
+    
     public override async Task OnConnectedAsync()
     {
         var msg = hiLoGame.AddPlayer(Context.ConnectionId);
@@ -34,7 +39,6 @@ public class HLHub : Hub
                 await SendAll(hiLoGame.GetPlayersScores());
             }
         }
-        return;
     }
 
     public async Task SendAll(string text)

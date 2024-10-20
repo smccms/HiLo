@@ -3,6 +3,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<HLHub>();
+builder.Services.AddTransient<IHiLoGame, HiLoGame>(); 
 
 var app = builder.Build();
 
